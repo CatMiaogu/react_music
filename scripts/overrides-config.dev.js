@@ -1,4 +1,9 @@
 module.exports = function(config) {
+    // Define the root path alias
+    let alias = config.resolve.alias;
+    alias["@"] = baseConfig.rootPath;
+    // Use Poststylus Plugin to handle stylus
+    config.plugins.push(baseConfig.stylusLoaderOptionsPlugin);
 
     // Use your ESLint
     /*let eslintLoader = config.module.rules[0];
