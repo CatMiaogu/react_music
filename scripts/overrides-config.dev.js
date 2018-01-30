@@ -1,3 +1,5 @@
+const baseConfig = require('./overrides-config.base')
+
 module.exports = function(config) {
     // Define the root path alias
     let alias = config.resolve.alias;

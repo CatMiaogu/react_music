@@ -1,15 +1,17 @@
 import React from 'react';
-import logo from "../assets/imgs/logo.png";
-import '../assets/stylus/reset.styl'
-import './App.styl';
 import {BrowserRouter as Router, Route, Switch, Redirect, NavLink} from "react-router-dom";
 import Recommend from "./recommend/Recommend"
 import Ranking from "./ranking/Ranking"
 import Search from "./search/Search"
 
+import logo from "../assets/imgs/logo.png";
+import '../assets/stylus/reset.styl'
+import './App.styl';
+
 class App extends React.Component {
   render() {
     return (
+        <Router>
       <div className="app">
           <header className="app-header">
               <img src={logo} className="App-logo" alt="logo"/>
@@ -38,6 +40,7 @@ class App extends React.Component {
               </Switch>
           </div>
       </div>
+        </Router>
     );
   }
 }
