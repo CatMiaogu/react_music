@@ -7,6 +7,7 @@ import Search from "./search/Search"
 import logo from "../assets/imgs/logo.png";
 import '../assets/stylus/reset.styl'
 import './App.styl';
+import "../assets/stylus/font.styl"
 
 class App extends React.Component {
     render() {

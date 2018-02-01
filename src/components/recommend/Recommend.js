@@ -1,15 +1,14 @@
-/**
- * Created by tzhao on 2018/1/26.
- */
-import React from 'react'
+import React from "react"
+import {Route} from "react-router-dom"
+import LazyLoad, { forceCheck } from "react-lazyload"
 import Swiper from "swiper"
 import {getCarousel, getNewAlbum} from "@/api/recommend"
+import Album from "../album/Album"
 import {CODE_SUCCESS} from "@/api/config"
 import Scroll from "@/common/scroll/Scroll"
 import Loading from "@/common/loading/Loading"
-import LazyLoad,{forceCheck} from "react-lazyload"
 import * as AlbumModel from "@/model/album"
-import './recommend.styl'
+import "./recommend.styl"
 import "swiper/dist/css/swiper.css"
 
 
@@ -24,7 +23,6 @@ class Recommend extends React.Component {
             refreshScroll: false
         };
     }
-
     componentDidMount() {
         getCarousel().then((res) => {
             console.log("获取轮播：");
@@ -34,7 +32,7 @@ class Recommend extends React.Component {
                     this.setState({
                         sliderList: res.data.slider
                     }, () => {
-                        if (!this.sliderSwiper) {
+                        if(!this.sliderSwiper) {
                             //初始化轮播图
                             this.sliderSwiper = new Swiper(".slider-container", {
                                 loop: true,
@@ -49,7 +47,7 @@ class Recommend extends React.Component {
         });
 
         getNewAlbum().then((res) => {
-            console.log("获取最新专辑");
+            console.log("获取最新专辑：");
             if (res) {
                 console.log(res);
                 if (res.code === CODE_SUCCESS) {
@@ -63,28 +61,37 @@ class Recommend extends React.Component {
                         newAlbums: albumList
                     }, () => {
                         //刷新scroll
-                        this.setState({refreshScroll: true});
+                        this.setState({refreshScroll:true});
                     });
                 }
             }
+
         });
     }
-
     toLink(linkUrl) {
-        /*使用闭包把参数变成局部变量*/
+        /*使用闭包把参数变为局部变量使用*/
         return () => {
             window.location.href = linkUrl;
         };
     }
-
+    toAlbumDetail(url) {
+        /*scroll组件会派发一个点击事件，不能使用链接跳转*/
+        return () => {
+            this.props.history.push({
+                pathname: url
+            });
+        }
+    }
     render() {
+        let {match} = this.props;
         let albums = this.state.newAlbums.map(item => {
             //通过函数创建专辑对象
             let album = AlbumModel.createAlbumByList(item);
             return (
-                <div className="album-wrapper" key={album.mId}>
+                <div className="album-wrapper" key={album.mId}
+                     onClick={this.toAlbumDetail(`${match.url + '/' + album.mId}`)}>
                     <div className="left">
-                        <LazyLoad>
+                        <LazyLoad height={60}>
                             <img src={album.img} width="100%" height="100%" alt={album.name}/>
                         </LazyLoad>
                     </div>
@@ -95,7 +102,7 @@ class Recommend extends React.Component {
                         <div className="singer-name">
                             {album.singer}
                         </div>
-                        <div className="public-time">
+                        <div className="public—time">
                             {album.publicTime}
                         </div>
                     </div>
@@ -104,20 +111,22 @@ class Recommend extends React.Component {
         });
         return (
             <div className="music-recommend">
-                <Scroll refresh={this.state.refreshScroll} onScroll={(e) => {
-                    /*检查懒加载组建是否出现在视图中， 如果出现就加载组件*/
-                    forceCheck();
-                }}>
+                <Scroll refresh={this.state.refreshScroll}
+                        onScroll={(e) => {
+                            /*检查懒加载组件是否出现在视图中，如果出现就加载组件*/
+                            forceCheck();}}>
                     <div>
                         <div className="slider-container">
                             <div className="swiper-wrapper">
                                 {
                                     this.state.sliderList.map(slider => {
-                                        return (<div className="swiper-slide" key={slider.id}>
-                                            <a className="slider-nav" onclick={this.toLink(slider.linkUrl)}>
-                                                <img src={slider.picUrl} width="100%" height="100%" alt="推荐"/>
-                                            </a>
-                                        </div>);
+                                        return (
+                                            <div className="swiper-slide" key={slider.id}>
+                                                <a className="slider-nav" onClick={this.toLink(slider.linkUrl)}>
+                                                    <img src={slider.picUrl} width="100%" height="100%" alt="推荐"/>
+                                                </a>
+                                            </div>
+                                        );
                                     })
                                 }
                             </div>
@@ -131,6 +140,8 @@ class Recommend extends React.Component {
                         </div>
                     </div>
                 </Scroll>
+                <Loading title="正在加载..." show={this.state.loading}/>
+                <Route path={`${match.url + '/:id'}`} component={Album} />
             </div>
         );
     }
