@@ -15,7 +15,6 @@ class Player extends React.Component {
         this.currentIndex = 0;
         //拖拽进度
         this.dragProgress = 0;
-        this.isFirstPlay = true;
 
         //播放模式： list-列表 single-单曲 shuffle-随机
         this.playModes = ["list", "single", "shuffle"];
@@ -25,13 +24,6 @@ class Player extends React.Component {
             playProgress: 0,
             playStatus: false,
             currentPlayMode: 0
-        }
-    }
-    componentDidUpdate() {
-        //兼容手机端canplay事件触发后第一次调用play()方法无法自动播放的问题
-        if (this.isFirstPlay === true) {
-            this.audioDOM.play();
-            this.isFirstPlay = false;
         }
     }
     componentDidMount() {
@@ -104,13 +96,6 @@ class Player extends React.Component {
      * 播放或暂停
      */
     playOrPause = () => {
-        /*if(this.audioDOM.paused){
-            this.audioDOM.play();
-            this.startImgRotate();
-
-            this.setState({
-                playStatus: true
-            });*/
         if(this.state.playStatus === false){
             //表示第一次播放
             if (this.first === undefined) {
@@ -123,7 +108,6 @@ class Player extends React.Component {
             this.setState({
                 playStatus: true
             });
-
         }else{
             this.audioDOM.pause();
             this.stopImgRotate();
@@ -270,11 +254,9 @@ class Player extends React.Component {
             //当前歌曲发发生变化
             if (this.currentSong.id !== this.props.currentSong.id) {
                 this.currentSong = this.props.currentSong;
-                /*this.audioDOM.src = this.currentSong.url;
-                //加载资源，ios需要调用此方法
-                this.audioDOM.load();*/
                 if (this.audioDOM) {
                     this.audioDOM.src = this.currentSong.url;
+                    //加载资源，ios需要调用此方法
                     this.audioDOM.load();
                 }
             }
